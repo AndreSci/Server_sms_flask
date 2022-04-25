@@ -12,7 +12,6 @@ HOST = '0.0.0.0'
 PORT = 8000
 BALANCE_SMS_SERVICE = 0
 number_black = "+79991115544"
-name_phone = "Andrew"
 TAKE_BALANCE_URL = ""
 SERVICE_NAME = ""
 ID_USER = ""
