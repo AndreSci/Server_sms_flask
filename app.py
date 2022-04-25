@@ -17,6 +17,7 @@ TAKE_BALANCE_URL = ""
 SERVICE_NAME = ""
 ID_USER = ""
 REQ_JSON = {}
+URL_UP = '/sendsms/'
 
 
 # сервисные функции ---------------------------------------------------------
@@ -32,7 +33,7 @@ def loggers(text):
     for_file_name = str(today.strftime("%Y-%m-%d"))
 
     with open(f'{PATH_LOG}{for_file_name}-LOG.log', 'a', encoding='utf-8') as file:
-        # mas = str(today.strftime("%Y-%m-%d-%H.%M.%S")) + "\t" + text + "\n"
+        # mess = str(today.strftime("%Y-%m-%d-%H.%M.%S")) + "\t" + text + "\n"
         mess = str(today.strftime("%H.%M.%S")) + "\t" + text + "\n"
         print(mess)
         file.write(mess)
@@ -80,7 +81,6 @@ def send_sms(phone_num, text):
     global REQ_JSON
     req = requests.get(f"https://sms.ru/sms/send?api_id={ID_USER}&to={phone_num}&msg={text}&json=1")
     REQ_JSON = req.json()
-    print(REQ_JSON)
     # парсер номеров на случай если будет не один номер в отправке
     if REQ_JSON["status"] == "OK":
         for it in REQ_JSON["sms"]:
@@ -91,12 +91,10 @@ def send_sms(phone_num, text):
         return "ERROR"
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route(URL_UP, methods=['GET', 'POST'])
 def index():
     if request.method == "POST":
-        print(request)
-        print(request.form)
-        it_url_param = False
+        # it_url_param = False
         # Если запрос произведет с ImmutableMultiDict([])
         phone_num = request.form.get('fphone')
         text = request.form.get('ftext')
@@ -105,16 +103,15 @@ def index():
         if not phone_num:
             phone_num = request.args.get('fphone')
             text = request.args.get('ftext')
-            it_url_param = True
+            # it_url_param = True
 
         status_m = send_sms(phone_num, text)
 
         loggers(f"{status_m}\t{index.__name__}\tsend to {phone_num}\ttext: {text}")  # log
 
-        if it_url_param:
-            return REQ_JSON
-        else:
-            return render_template("index.html")
+        return REQ_JSON
+
+        # if it_url_param: return REQ_JSON else: return render_template("index.html", event_app=status_m)
 
     elif request.method == "GET":
         loggers(f"SUCCESS\t{index.__name__}\tsend - index.html")  # log

@@ -76,3 +76,36 @@ http://yurok3000.ru:8085
 13.12.27	SUCCESS	take_balance	take balance from  = 194.5
 13.12.27	SUCCESS	take_balance	take balance from  = 194.5
 13.12.32	SUCCESS	index	send to  79661140411	text: hello from Postman
+14.15.46	SUCCESS	take_balance	take balance from  = 190.55
+14.15.46	SUCCESS	take_balance	take balance from  = 190.55
+14.16.00	SUCCESS	index	send to  79661140411	text: hello from Postman
+14.39.14	SUCCESS	take_balance	take balance from  = 186.6
+14.39.15	SUCCESS	take_balance	take balance from  = 186.6
+14.39.16	SUCCESS	index	send - index.html
+14.40.32	SUCCESS	take_balance	take balance from  = 186.6
+14.40.32	SUCCESS	take_balance	take balance from  = 186.6
+14.41.14	SUCCESS	take_balance	take balance from  = 186.6
+14.41.14	SUCCESS	take_balance	take balance from  = 186.6
+14.41.57	SUCCESS	index	send - index.html
+14.42.12	SUCCESS	take_balance	take balance from  = 186.6
+14.42.12	SUCCESS	take_balance	take balance from  = 186.6
+14.42.16	SUCCESS	index	send - index.html
+14.42.20	SUCCESS	index	send - index.html
+14.44.03	SUCCESS	take_balance	take balance from  = 186.6
+14.44.03	SUCCESS	take_balance	take balance from  = 186.6
+14.44.13	SUCCESS	index	send - index.html
+16.05.04	SUCCESS	take_balance	take balance from  = 186.6
+16.05.04	SUCCESS	take_balance	take balance from  = 186.6
+16.09.35	SUCCESS	take_balance	take balance from  = 186.6
+16.31.14	SUCCESS	take_balance	take balance from  = 186.6
+16.31.14	SUCCESS	take_balance	take balance from  = 186.6
+16.31.24	SUCCESS	index	send to +79661140411	text: 123123
+16.42.16	SUCCESS	take_balance	take balance from  = 182.65
+16.42.17	SUCCESS	take_balance	take balance from  = 182.65
+16.42.26	SUCCESS	index	send to +79661140411	text: хай
+16.44.09	SUCCESS	take_balance	take balance from  = 178.7
+16.45.05	SUCCESS	take_balance	take balance from  = 178.7
+16.45.05	SUCCESS	take_balance	take balance from  = 178.7
+16.45.10	SUCCESS	index	send to +79661140411	text: 123123
+16.45.14	SUCCESS	index	send - index.html
+16.45.18	SUCCESS	index	send - index.html
