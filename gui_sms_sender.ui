@@ -30,7 +30,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>60</y>
+      <y>120</y>
       <width>71</width>
       <height>51</height>
      </rect>
@@ -43,7 +43,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>120</y>
+      <y>180</y>
       <width>71</width>
       <height>51</height>
      </rect>
@@ -52,7 +52,7 @@
      <string>Hide</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="close_but">
+   <widget class="QPushButton" name="stop_but">
     <property name="geometry">
      <rect>
       <x>880</x>
@@ -62,7 +62,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Close</string>
+     <string>Stop</string>
     </property>
    </widget>
    <widget class="QStackedWidget" name="stack_Window">
@@ -229,6 +229,19 @@
     </property>
     <property name="text">
      <string>VIG sms sender</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="start_but">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>60</y>
+      <width>71</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start</string>
     </property>
    </widget>
   </widget>
