@@ -4,8 +4,9 @@ import datetime
 import requests
 import os
 
-
-app = Flask(__name__)  # создаем сервер flask
+# ---------------------------------------------------------------------------
+app = Flask(__name__)  # создаем сервер flask   -----------------------------
+# ---------------------------------------------------------------------------
 
 PATH_LOG = ''
 HOST = '0.0.0.0'
@@ -20,7 +21,6 @@ URL_UP = '/sendsms/'
 
 
 # сервисные функции ---------------------------------------------------------
-
 def loggers(text):
     global PATH_LOG
 
@@ -58,23 +58,22 @@ def take_settings():
     global ID_USER
     global PATH_LOG
 
+    # загружаем файл settings.ini
     config_set = configparser.ConfigParser()
     config_set.read("settings.ini")
+
     ID_USER = config_set["GENERAL"]["USER_ID"]
     PATH_LOG = config_set["GENERAL"]["PATH_LOG"]
-
-    # создаем глобальную переменную содержащую url для запроса баланса
-    TAKE_BALANCE_URL = "https://sms.ru/my/balance?api_id={0}&json=1".format(ID_USER)
     PORT = config_set["GENERAL"]["PORT"]
 
-# тело обработки запросов http ------------------------------------------------------------
+    # создаем глобальную переменную содержащую url для запроса баланса
+    TAKE_BALANCE_URL = f"https://sms.ru/my/balance?api_id={ID_USER}&json=1"
 
 
-# https://sms.ru/sms/send?api_id=24EE3A41-98A6-A84F-13FF-85F6204E142A&to=79661140411,74993221627&msg=hello+world&json=1
-# {'status': 'OK', 'status_code': 100, 'sms': {
-# '79661140411': {'status': 'OK', 'status_code': 100, 'sms_id': '202216-1000005', 'cost': '0.00'}
-# },
-# 'balance': 112.1}
+# --------------------------------------------------------------------------
+# тело обработки запросов http ---------------------------------------------
+# --------------------------------------------------------------------------
+
 def send_sms(phone_num, text):
     global ID_USER
     global REQ_JSON
@@ -119,7 +118,7 @@ def index():
         loggers(f"ERROR\t{index.__name__}\twrong address: {request.method}, {request.full_path}")  # log
         return make_response("<h2>Error: {0}</h2>".format(400))   # открываем страницу отправки сообщения
 
-# -----------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
