@@ -322,7 +322,7 @@
               <string>Start</string>
              </property>
             </widget>
-            <widget class="QPushButton" name="change_but">
+            <widget class="QPushButton" name="clear_but">
              <property name="geometry">
               <rect>
                <x>20</x>
@@ -332,10 +332,10 @@
               </rect>
              </property>
              <property name="text">
-              <string>Change</string>
+              <string>Clear</string>
              </property>
             </widget>
-            <widget class="QPushButton" name="hide_but">
+            <widget class="QPushButton" name="check_but">
              <property name="geometry">
               <rect>
                <x>20</x>
@@ -345,7 +345,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Hide</string>
+              <string>Check</string>
              </property>
             </widget>
            </widget>
@@ -358,19 +358,6 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QPushButton" name="stop_but">
-             <property name="geometry">
-              <rect>
-               <x>20</x>
-               <y>10</y>
-               <width>71</width>
-               <height>51</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Stop</string>
-             </property>
-            </widget>
            </widget>
           </item>
          </layout>

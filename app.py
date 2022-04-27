@@ -6,9 +6,12 @@ import requests
 import os
 import sys
 import threading
+from multiprocessing import Process
+
 
 # pyuic5 -x gui_sms_sender.ui -o gui_sms_sender.py
 # auto-py-to-exe
+
 # ---------------------------------------------------------------------------
 app = Flask(__name__)  # создаем сервер flask   -----------------------------
 # ---------------------------------------------------------------------------
@@ -160,7 +163,7 @@ def index():
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1317, 873)
+        MainWindow.resize(1232, 720)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 720))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -239,40 +242,9 @@ class Ui_MainWindow(object):
         self.log_window.setObjectName("log_window")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.log_window)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.table_log_files = QtWidgets.QTableWidget(self.log_window)
-        self.table_log_files.setMinimumSize(QtCore.QSize(120, 0))
-        self.table_log_files.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.table_log_files.setStyleSheet("QHeaderView::section:horizontal\n"
-"{\n"
-"    border: 1px solid rgb(32, 34, 42);\n"
-"    background-color:rgb(111, 111, 111);\n"
-"    color: rgb(255, 255, 255);\n"
-"}")
-        self.table_log_files.setObjectName("table_log_files")
-        self.table_log_files.setColumnCount(1)
-        self.table_log_files.setRowCount(4)
-        item = QtWidgets.QTableWidgetItem()
-        self.table_log_files.setVerticalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.table_log_files.setVerticalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.table_log_files.setVerticalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.table_log_files.setVerticalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.table_log_files.setHorizontalHeaderItem(0, item)
-        self.table_log_files.horizontalHeader().setVisible(True)
-        self.table_log_files.horizontalHeader().setCascadingSectionResizes(False)
-        self.table_log_files.horizontalHeader().setDefaultSectionSize(118)
-        self.table_log_files.horizontalHeader().setHighlightSections(True)
-        self.table_log_files.horizontalHeader().setSortIndicatorShown(False)
-        self.table_log_files.horizontalHeader().setStretchLastSection(False)
-        self.table_log_files.verticalHeader().setVisible(False)
-        self.table_log_files.verticalHeader().setCascadingSectionResizes(False)
-        self.horizontalLayout.addWidget(self.table_log_files)
         self.text_logs = QtWidgets.QTextBrowser(self.log_window)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         self.text_logs.setFont(font)
         self.text_logs.setObjectName("text_logs")
         self.horizontalLayout.addWidget(self.text_logs)
@@ -296,20 +268,17 @@ class Ui_MainWindow(object):
         self.start_but = QtWidgets.QPushButton(self.frame_5)
         self.start_but.setGeometry(QtCore.QRect(20, 10, 71, 51))
         self.start_but.setObjectName("start_but")
-        self.change_but = QtWidgets.QPushButton(self.frame_5)
-        self.change_but.setGeometry(QtCore.QRect(20, 70, 71, 51))
-        self.change_but.setObjectName("change_but")
-        self.hide_but = QtWidgets.QPushButton(self.frame_5)
-        self.hide_but.setGeometry(QtCore.QRect(20, 130, 71, 51))
-        self.hide_but.setObjectName("hide_but")
+        self.clear_but = QtWidgets.QPushButton(self.frame_5)
+        self.clear_but.setGeometry(QtCore.QRect(20, 70, 71, 51))
+        self.clear_but.setObjectName("clear_but")
+        self.check_but = QtWidgets.QPushButton(self.frame_5)
+        self.check_but.setGeometry(QtCore.QRect(20, 130, 71, 51))
+        self.check_but.setObjectName("check_but")
         self.verticalLayout.addWidget(self.frame_5)
         self.frame_7 = QtWidgets.QFrame(self.frame_6)
         self.frame_7.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_7.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_7.setObjectName("frame_7")
-        self.stop_but = QtWidgets.QPushButton(self.frame_7)
-        self.stop_but.setGeometry(QtCore.QRect(20, 10, 71, 51))
-        self.stop_but.setObjectName("stop_but")
         self.verticalLayout.addWidget(self.frame_7)
         self.horizontalLayout_3.addWidget(self.frame_6)
         self.verticalLayout_2.addWidget(self.frame_4)
@@ -327,30 +296,19 @@ class Ui_MainWindow(object):
         self.line_phone.setText(_translate("MainWindow", "+79991112233"))
         self.label_phone.setText(_translate("MainWindow", "Phone"))
         self.label_message.setText(_translate("MainWindow", "Message"))
-        item = self.table_log_files.verticalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Row"))
-        item = self.table_log_files.verticalHeaderItem(1)
-        item.setText(_translate("MainWindow", "New Row"))
-        item = self.table_log_files.verticalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Row"))
-        item = self.table_log_files.verticalHeaderItem(3)
-        item.setText(_translate("MainWindow", "New Row"))
-        item = self.table_log_files.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Log files"))
         self.start_but.setText(_translate("MainWindow", "Start"))
-        self.change_but.setText(_translate("MainWindow", "Change"))
-        self.hide_but.setText(_translate("MainWindow", "Hide"))
-        self.stop_but.setText(_translate("MainWindow", "Stop"))
+        self.clear_but.setText(_translate("MainWindow", "Clear"))
+        self.check_but.setText(_translate("MainWindow", "Check"))
 
 
 # ----------------------------------------------------------------------------
 
-def thread_flask():
-    print("Hallo i'm Flask")
-    app.run(debug=False, host=HOST, port=int(PORT))
-
 
 class threadPyqt():
+    """ Запуск сервера Фласк происходит в функйии thread_flask() """
+    def thread_flask(self):
+        print("Hallo i'm Flask")
+        app.run(debug=False, host=HOST, port=int(PORT))
 
     def __init__(self):
         super().__init__()
@@ -359,27 +317,22 @@ class threadPyqt():
         self.MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
-        self.thread_for_flask = threading.Thread(target=thread_flask, name="VIG_sms_server")
 
-        self.ui.hide_but.clicked.connect(self.hide_gui)
+        self.thread_for_flask = threading.Thread(target=self.thread_flask, name="VIG_sms_server")
+
+        self.MainWindow.setWindowTitle("VIG_sms_server")
+
+        self.ui.check_but.clicked.connect(self.check_flask)
 
         # self.ui.change_but.clicked.connect(self.change_log_send)
-        self.ui.change_but.clicked.connect(self.add_log)
+        self.ui.clear_but.clicked.connect(self.clear_logs)
 
-        self.ui.stop_but.clicked.connect(self.close_flask)
         self.ui.start_but.clicked.connect(self.run_flask)
-
-    # -------------------------------------------------------------------------------------------------
-
-    # -------------------------------------------------------------------------------------------------
 
     def show(self):
         self.MainWindow.show()
 
-    def hide_gui(self):
-        pass
-
-    def add_log(self, text_log=123):
+    def add_log(self, text_log):
         self.ui.text_logs.append(str(text_log))
 
     def clear_logs(self):
@@ -388,17 +341,14 @@ class threadPyqt():
     def exit(self):
         sys.exit(self.app_ui.exec_())
 
-    def thread_flask(self):
-        app.run(debug=False, host=HOST, port=int(PORT))
-
     def run_flask(self):
+        self.ui.start_but.setText("Exit")
         self.thread_for_flask.start()
+        self.ui.label_status.setText(f"status: Server status is {self.thread_for_flask.is_alive()}")
 
     def check_flask(self):
-        self.ui.label_status.setText(f"status: Thread flask is {self.thread_for_flask.is_alive()}")
-
-    def close_flask(self):
-        pass
+        self.ui.label_status.setText(f"status: Server status is {self.thread_for_flask.is_alive()}")
+        take_balance()
 
 
 if __name__ == "__main__":
