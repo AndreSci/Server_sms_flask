@@ -6,8 +6,6 @@ import requests
 import os
 import sys
 import threading
-import multiprocessing
-import asyncio
 
 # pyuic5 -x gui_sms_sender.ui -o gui_sms_sender.py
 # auto-py-to-exe
@@ -27,10 +25,19 @@ ID_USER = ""
 REQ_JSON = {}
 URL_UP = '/sendsms/'
 
+ADD_LOG = ''
+
 
 # сервисные функции ---------------------------------------------------------
-def loggers(text):
+def loggers(text, status=0):
+    """ status
+        0 = SUCCESS
+        1 = ERROR
+        2 = EVENT
+    """
     global PATH_LOG
+    global GUI_ADD_LOGS
+    global ADD_LOG
 
     if not os.path.exists(PATH_LOG):
         os.makedirs(PATH_LOG)
@@ -39,11 +46,18 @@ def loggers(text):
 
     for_file_name = str(today.strftime("%Y-%m-%d"))
 
+    color_s = "black"
+    if status == 1:
+        color_s = "red"
+    elif status == 2:
+        color_s = "blue"
+
     with open(f'{PATH_LOG}{for_file_name}-LOG.log', 'a', encoding='utf-8') as file:
         # mess = str(today.strftime("%Y-%m-%d-%H.%M.%S")) + "\t" + text + "\n"
         mess = str(today.strftime("%H.%M.%S")) + "\t" + text + "\n"
         print(mess)
         file.write(mess)
+        ADD_LOG.add_log(f"<font color=\"{color_s}\">{mess}")
 # ---------------------------------------------------------------------------
 
 
@@ -58,7 +72,7 @@ def take_balance():
         BALANCE_SMS_SERVICE = j_info["balance"]
         loggers(f"SUCCESS\t{take_balance.__name__}\ttake balance from {SERVICE_NAME} = {BALANCE_SMS_SERVICE}")  # log
     except ImportError:
-        loggers(f"ERROR\t{take_balance.__name__}\ttake balance from {SERVICE_NAME}")  # log
+        loggers(f"ERROR\t{take_balance.__name__}\ttake balance from {SERVICE_NAME}", 1)  # log
 
 
 def take_settings():
@@ -69,7 +83,7 @@ def take_settings():
 
     # загружаем файл settings.ini
     if not os.path.isfile("settings.ini"):
-        loggers(f"ERROR\t{take_settings.__name__}\tfile settings.ini not found")
+        loggers(f"ERROR\t{take_settings.__name__}\tfile settings.ini not found", 1)
         raise FileExistsError
 
     config_set = configparser.ConfigParser()
@@ -118,22 +132,26 @@ def index():
             # it_url_param = True
 
         status_m = send_sms(phone_num, text)
+        log_status = 0
+        if status_m == "ERROR":
+            log_status = 1
 
-        loggers(f"{status_m}\t{index.__name__}\tsend to {phone_num}\ttext: {text}")  # log
+        loggers(f"{status_m}\t{index.__name__}\tsend to {phone_num}\ttext: {text}", log_status)  # log
 
         return REQ_JSON
 
         # if it_url_param: return REQ_JSON else: return render_template("index.html", event_app=status_m)
 
     elif request.method == "GET":
+        print(request.host)
         if os.path.isfile("./templates/index.html"):
-            loggers(f"SUCCESS\t{index.__name__}\tsend - index.html")  # log
+            loggers(f"EVENT\t{index.__name__}\tsend - index.html", 2)  # log
             return render_template("index.html")    # открываем страницу отправки сообщения
         else:
-            loggers(f"ERROR\t{index.__name__}\tfile index.html not found")
+            loggers(f"ERROR\t{index.__name__}\tfile index.html not found", 1)
             return make_response(f"<h2>Error: 400, fail open file index.html</h2>")
     else:
-        loggers(f"ERROR\t{index.__name__}\twrong address: {request.method}, {request.full_path}")  # log
+        loggers(f"ERROR\t{index.__name__}\twrong address: {request.method}, {request.full_path}", 1)  # log
         return make_response("<h2>Error: {0}</h2>".format(400))   # открываем страницу отправки сообщения
 
 # --------------------------------------------------------------------------
@@ -142,22 +160,56 @@ def index():
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1000, 720)
+        MainWindow.resize(1317, 873)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 720))
-        MainWindow.setMaximumSize(QtCore.QSize(1000, 720))
+        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.change_but = QtWidgets.QPushButton(self.centralwidget)
-        self.change_but.setGeometry(QtCore.QRect(890, 120, 71, 51))
-        self.change_but.setObjectName("change_but")
-        self.hide_but = QtWidgets.QPushButton(self.centralwidget)
-        self.hide_but.setGeometry(QtCore.QRect(890, 180, 71, 51))
-        self.hide_but.setObjectName("hide_but")
-        self.stop_but = QtWidgets.QPushButton(self.centralwidget)
-        self.stop_but.setGeometry(QtCore.QRect(880, 620, 71, 51))
-        self.stop_but.setObjectName("stop_but")
-        self.stack_Window = QtWidgets.QStackedWidget(self.centralwidget)
-        self.stack_Window.setGeometry(QtCore.QRect(20, 60, 821, 631))
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.frame = QtWidgets.QFrame(self.centralwidget)
+        self.frame.setMinimumSize(QtCore.QSize(718, 60))
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.frame)
+        self.horizontalLayout_2.setContentsMargins(1, 1, 1, 1)
+        self.horizontalLayout_2.setSpacing(6)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.frame_2 = QtWidgets.QFrame(self.frame)
+        self.frame_2.setMinimumSize(QtCore.QSize(173, 0))
+        self.frame_2.setMaximumSize(QtCore.QSize(173, 16777215))
+        self.frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_2.setObjectName("frame_2")
+        self.title_lab = QtWidgets.QLabel(self.frame_2)
+        self.title_lab.setGeometry(QtCore.QRect(10, 0, 171, 51))
+        self.title_lab.setMinimumSize(QtCore.QSize(171, 0))
+        self.title_lab.setMaximumSize(QtCore.QSize(173, 16777215))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.title_lab.setFont(font)
+        self.title_lab.setObjectName("title_lab")
+        self.horizontalLayout_2.addWidget(self.frame_2)
+        self.frame_3 = QtWidgets.QFrame(self.frame)
+        self.frame_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_3.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_3.setObjectName("frame_3")
+        self.label_status = QtWidgets.QLabel(self.frame_3)
+        self.label_status.setGeometry(QtCore.QRect(10, 10, 371, 31))
+        self.label_status.setObjectName("label_status")
+        self.horizontalLayout_2.addWidget(self.frame_3)
+        self.verticalLayout_2.addWidget(self.frame)
+        self.frame_4 = QtWidgets.QFrame(self.centralwidget)
+        self.frame_4.setMinimumSize(QtCore.QSize(718, 0))
+        self.frame_4.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_4.setObjectName("frame_4")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_4)
+        self.horizontalLayout_3.setContentsMargins(3, 3, 3, 3)
+        self.horizontalLayout_3.setSpacing(2)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.stack_Window = QtWidgets.QStackedWidget(self.frame_4)
         self.stack_Window.setObjectName("stack_Window")
         self.send_window = QtWidgets.QWidget()
         self.send_window.setObjectName("send_window")
@@ -182,56 +234,113 @@ class Ui_MainWindow(object):
         self.label_message.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_message.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_message.setObjectName("label_message")
-        self.label_status = QtWidgets.QLabel(self.send_window)
-        self.label_status.setGeometry(QtCore.QRect(30, 590, 371, 31))
-        self.label_status.setObjectName("label_status")
         self.stack_Window.addWidget(self.send_window)
         self.log_window = QtWidgets.QWidget()
         self.log_window.setObjectName("log_window")
-        self.scrollArea = QtWidgets.QScrollArea(self.log_window)
-        self.scrollArea.setGeometry(QtCore.QRect(10, 0, 101, 631))
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 99, 629))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.scrollArea_2 = QtWidgets.QScrollArea(self.log_window)
-        self.scrollArea_2.setGeometry(QtCore.QRect(110, 0, 711, 631))
-        self.scrollArea_2.setWidgetResizable(True)
-        self.scrollArea_2.setObjectName("scrollArea_2")
-        self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 709, 629))
-        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
-        self.stack_Window.addWidget(self.log_window)
-        self.title_lab = QtWidgets.QLabel(self.centralwidget)
-        self.title_lab.setGeometry(QtCore.QRect(20, 10, 171, 41))
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.log_window)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.table_log_files = QtWidgets.QTableWidget(self.log_window)
+        self.table_log_files.setMinimumSize(QtCore.QSize(120, 0))
+        self.table_log_files.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.table_log_files.setStyleSheet("QHeaderView::section:horizontal\n"
+"{\n"
+"    border: 1px solid rgb(32, 34, 42);\n"
+"    background-color:rgb(111, 111, 111);\n"
+"    color: rgb(255, 255, 255);\n"
+"}")
+        self.table_log_files.setObjectName("table_log_files")
+        self.table_log_files.setColumnCount(1)
+        self.table_log_files.setRowCount(4)
+        item = QtWidgets.QTableWidgetItem()
+        self.table_log_files.setVerticalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.table_log_files.setVerticalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.table_log_files.setVerticalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.table_log_files.setVerticalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.table_log_files.setHorizontalHeaderItem(0, item)
+        self.table_log_files.horizontalHeader().setVisible(True)
+        self.table_log_files.horizontalHeader().setCascadingSectionResizes(False)
+        self.table_log_files.horizontalHeader().setDefaultSectionSize(118)
+        self.table_log_files.horizontalHeader().setHighlightSections(True)
+        self.table_log_files.horizontalHeader().setSortIndicatorShown(False)
+        self.table_log_files.horizontalHeader().setStretchLastSection(False)
+        self.table_log_files.verticalHeader().setVisible(False)
+        self.table_log_files.verticalHeader().setCascadingSectionResizes(False)
+        self.horizontalLayout.addWidget(self.table_log_files)
+        self.text_logs = QtWidgets.QTextBrowser(self.log_window)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.title_lab.setFont(font)
-        self.title_lab.setObjectName("title_lab")
-        self.start_but = QtWidgets.QPushButton(self.centralwidget)
-        self.start_but.setGeometry(QtCore.QRect(890, 60, 71, 51))
+        self.text_logs.setFont(font)
+        self.text_logs.setObjectName("text_logs")
+        self.horizontalLayout.addWidget(self.text_logs)
+        self.stack_Window.addWidget(self.log_window)
+        self.horizontalLayout_3.addWidget(self.stack_Window)
+        self.frame_6 = QtWidgets.QFrame(self.frame_4)
+        self.frame_6.setMinimumSize(QtCore.QSize(120, 390))
+        self.frame_6.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.frame_6.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_6.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_6.setObjectName("frame_6")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_6)
+        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
+        self.verticalLayout.setSpacing(2)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.frame_5 = QtWidgets.QFrame(self.frame_6)
+        self.frame_5.setMinimumSize(QtCore.QSize(0, 193))
+        self.frame_5.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_5.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_5.setObjectName("frame_5")
+        self.start_but = QtWidgets.QPushButton(self.frame_5)
+        self.start_but.setGeometry(QtCore.QRect(20, 10, 71, 51))
         self.start_but.setObjectName("start_but")
+        self.change_but = QtWidgets.QPushButton(self.frame_5)
+        self.change_but.setGeometry(QtCore.QRect(20, 70, 71, 51))
+        self.change_but.setObjectName("change_but")
+        self.hide_but = QtWidgets.QPushButton(self.frame_5)
+        self.hide_but.setGeometry(QtCore.QRect(20, 130, 71, 51))
+        self.hide_but.setObjectName("hide_but")
+        self.verticalLayout.addWidget(self.frame_5)
+        self.frame_7 = QtWidgets.QFrame(self.frame_6)
+        self.frame_7.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_7.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_7.setObjectName("frame_7")
+        self.stop_but = QtWidgets.QPushButton(self.frame_7)
+        self.stop_but.setGeometry(QtCore.QRect(20, 10, 71, 51))
+        self.stop_but.setObjectName("stop_but")
+        self.verticalLayout.addWidget(self.frame_7)
+        self.horizontalLayout_3.addWidget(self.frame_6)
+        self.verticalLayout_2.addWidget(self.frame_4)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stack_Window.setCurrentIndex(0)
+        self.stack_Window.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.change_but.setText(_translate("MainWindow", "Change"))
-        self.hide_but.setText(_translate("MainWindow", "Hide"))
-        self.stop_but.setText(_translate("MainWindow", "Stop"))
+        self.title_lab.setText(_translate("MainWindow", "VIG sms sender"))
+        self.label_status.setText(_translate("MainWindow", "status:"))
         self.line_phone.setText(_translate("MainWindow", "+79991112233"))
         self.label_phone.setText(_translate("MainWindow", "Phone"))
         self.label_message.setText(_translate("MainWindow", "Message"))
-        self.label_status.setText(_translate("MainWindow", "status:"))
-        self.title_lab.setText(_translate("MainWindow", "VIG sms sender"))
+        item = self.table_log_files.verticalHeaderItem(0)
+        item.setText(_translate("MainWindow", "New Row"))
+        item = self.table_log_files.verticalHeaderItem(1)
+        item.setText(_translate("MainWindow", "New Row"))
+        item = self.table_log_files.verticalHeaderItem(2)
+        item.setText(_translate("MainWindow", "New Row"))
+        item = self.table_log_files.verticalHeaderItem(3)
+        item.setText(_translate("MainWindow", "New Row"))
+        item = self.table_log_files.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "Log files"))
         self.start_but.setText(_translate("MainWindow", "Start"))
+        self.change_but.setText(_translate("MainWindow", "Change"))
+        self.hide_but.setText(_translate("MainWindow", "Hide"))
+        self.stop_but.setText(_translate("MainWindow", "Stop"))
 
 
 # ----------------------------------------------------------------------------
@@ -242,6 +351,7 @@ def thread_flask():
 
 
 class threadPyqt():
+
     def __init__(self):
         super().__init__()
         print("Hallo i'm PyQt")
@@ -254,19 +364,26 @@ class threadPyqt():
         self.ui.hide_but.clicked.connect(self.hide_gui)
 
         # self.ui.change_but.clicked.connect(self.change_log_send)
-        self.ui.change_but.clicked.connect(self.check_flask)
+        self.ui.change_but.clicked.connect(self.add_log)
 
         self.ui.stop_but.clicked.connect(self.close_flask)
         self.ui.start_but.clicked.connect(self.run_flask)
 
+    # -------------------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------------------
+
     def show(self):
         self.MainWindow.show()
 
-    def change_log_send(self):
-        pass
-
     def hide_gui(self):
         pass
+
+    def add_log(self, text_log=123):
+        self.ui.text_logs.append(str(text_log))
+
+    def clear_logs(self):
+        self.ui.text_logs.clear()
 
     def exit(self):
         sys.exit(self.app_ui.exec_())
@@ -288,8 +405,11 @@ if __name__ == "__main__":
     # подгружаем данные из файла settings
     take_settings()
     # получаем наш баланс
-    gui = threadPyqt()
-    gui.show()
 
+    gui = threadPyqt()
+
+    ADD_LOG = gui  # делаем класс глобальным для получение доступа из других функция в методы класса
+
+    gui.show()
     gui.exit()
     # запускаем сервер flask
