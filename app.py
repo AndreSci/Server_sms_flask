@@ -73,7 +73,7 @@ def take_balance():
         req = requests.get(TAKE_BALANCE_URL)
         j_info = req.json()
         BALANCE_SMS_SERVICE = j_info["balance"]
-        loggers(f"SUCCESS\t{take_balance.__name__}\ttake balance from {SERVICE_NAME} = {BALANCE_SMS_SERVICE}")  # log
+        loggers(f"SUCCESS\t{take_balance.__name__}\tbalance on {SERVICE_NAME} = {BALANCE_SMS_SERVICE}")  # log
     except ImportError:
         loggers(f"ERROR\t{take_balance.__name__}\ttake balance from {SERVICE_NAME}", 1)  # log
 
@@ -83,6 +83,7 @@ def take_settings():
     global TAKE_BALANCE_URL
     global ID_USER
     global PATH_LOG
+    global SERVICE_NAME
 
     # загружаем файл settings.ini
     if not os.path.isfile("settings.ini"):
@@ -95,6 +96,7 @@ def take_settings():
     ID_USER = config_set["GENERAL"]["USER_ID"]
     PATH_LOG = config_set["GENERAL"]["PATH_LOG"]
     PORT = config_set["GENERAL"]["PORT"]
+    SERVICE_NAME = config_set["GENERAL"]["SERVICE_NAME"]
 
     # создаем глобальную переменную содержащую url для запроса баланса
     TAKE_BALANCE_URL = f"https://sms.ru/my/balance?api_id={ID_USER}&json=1"
