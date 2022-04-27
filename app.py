@@ -56,8 +56,8 @@ def loggers(text, status=0):
         color_s = "blue"
 
     with open(f'{PATH_LOG}{for_file_name}-LOG.log', 'a', encoding='utf-8') as file:
-        # mess = str(today.strftime("%Y-%m-%d-%H.%M.%S")) + "\t" + text + "\n"
-        mess = str(today.strftime("%H.%M.%S")) + "\t" + text + "\n"
+        mess = str(today.strftime("%Y-%m-%d-%H.%M.%S")) + "\t" + text + "\n"
+        # mess = str(today.strftime("%H.%M.%S")) + "\t" + text + "\n"
         print(mess)
         file.write(mess)
         ADD_LOG.add_log(f"<font color=\"{color_s}\">{mess}")
@@ -344,7 +344,11 @@ class threadPyqt():
     def run_flask(self):
         self.ui.start_but.setText("Exit")
         self.thread_for_flask.start()
-        self.ui.label_status.setText(f"status: Server status is {self.thread_for_flask.is_alive()}")
+        if self.thread_for_flask.is_alive():
+            loggers(f"SUCCESS\tclass threadPyqt\tSTART SERVER")  # log
+            self.ui.label_status.setText(f"status: Server status is {self.thread_for_flask.is_alive()}")
+        else:
+            loggers(f"ERROR\tclass threadPyqt\tSTART SERVER", 1)  # log
 
     def check_flask(self):
         self.ui.label_status.setText(f"status: Server status is {self.thread_for_flask.is_alive()}")
