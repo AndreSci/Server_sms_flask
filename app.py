@@ -7,8 +7,6 @@ import os
 import sys
 import threading
 import json
-from multiprocessing import Process
-
 
 # pyuic5 -x gui_sms_sender_ru.ui -o gui_sms_sender2.py
 # auto-py-to-exe
@@ -185,10 +183,10 @@ def send_sms(phone_num, text):
 def index():
     global REQ_JSON
     json_replay = {"RESULT": "SUCCESS", "DESC": "None", "DATA": "None"}
-
     if request.method == "POST":
         # it_url_param = False
         # Если запрос произведет с ImmutableMultiDict([])
+
         phone_num = request.form.get('fphone')
         text = request.form.get('ftext')
 
@@ -204,10 +202,12 @@ def index():
             json_replay["RESULT"] = "ERROR"
             json_replay["DESC"] = f"Error from answer {SERVICE_NAME}"
             log_status = 1
+            loggers(f"{status_m}\t{index.__name__}\t Info: {request.form}", log_status)  # log
 
         loggers(f"{status_m}\t{index.__name__}\t Send to number {phone_num}\t text: {text}", log_status)  # log
 
         json_replay["DATA"] = REQ_JSON
+        print(json_replay)
         return json_replay
 
         # if it_url_param: return REQ_JSON else: return render_template("index.html", event_app=status_m)
@@ -368,6 +368,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.thread_for_flask = threading.Thread(target=self.thread_flask, name="VIG_sms_server")
 
         self.setWindowTitle("VIG_sms_server")
+        # self.setWindowIcon(QtGui.QIcon('icon.png'))
 
         # tray_icon -------------------------------------------------
         self.tray_icon = QtWidgets.QSystemTrayIcon()
@@ -434,6 +435,7 @@ if __name__ == "__main__":
     take_settings()
     # получаем наш баланс
     app_gui = QtWidgets.QApplication(sys.argv)
+    app_gui.setWindowIcon(QtGui.QIcon('icon.png'))
     gui = MainWindow()
 
     ADD_LOG = gui  # делаем класс глобальным для получение доступа из других функция в методы класса
